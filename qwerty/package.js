@@ -29,6 +29,11 @@ app.post('/friend-add', (req, res) => {
         res.status(400).json({ error: 'Invalid friend data' });
     }
 });
+app.delete('/friend-delete/:name', (req, res) => {
+  const friendName = req.params.name;
+  friendsList = friendsList.filter(friend => friend.name !== friendName);
+
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
