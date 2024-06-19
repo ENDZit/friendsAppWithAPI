@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:future1/api/friendsOperations.dart';
 
 class FriendsDetails extends StatefulWidget {
   const FriendsDetails({super.key});
@@ -8,22 +7,21 @@ class FriendsDetails extends StatefulWidget {
   @override
   FriendsDetailsState createState() => FriendsDetailsState();
 }
-
+  @override
 class FriendsDetailsState extends State<FriendsDetails> {
-  List<dynamic> postFriends = [];
+late  Future<List<dynamic>> friendsList;
 
-  Future<void> friends() async {
-    final response =
-    await http.get(Uri.parse('http://192.168.1.110:3000/friends-list'));
-    if (response.statusCode == 200) {
-      setState(() {
-        postFriends = jsonDecode(response.body);
-      });
-    } else {
-      throw Exception('ERROR');
-    }
-  }
+@override
+void initState(){
+  super.initState();
+  friendsList = GetFriends().friends();
+}
 
+void updateFriends(){
+  setState(() {
+    friendsList = GetFriends().friends();
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +37,8 @@ class FriendsDetailsState extends State<FriendsDetails> {
               },
               child: const Text('friends add')),),
             Expanded(child: ElevatedButton(onPressed: () {
-              friends();
-            }, child: const Text('show friends'))),
+              updateFriends();
+            }, child:( const Text('refresh friends')) )),
             Expanded(child: ElevatedButton(
               onPressed: (){
                 Navigator.pushNamed(context, '/DeleteFriendScreen');
@@ -49,18 +47,23 @@ class FriendsDetailsState extends State<FriendsDetails> {
             ))
 
           ],),
-            const SizedBox(
-              height: 20,
-            ),
-            Expanded(
-                child: ListView.builder(
-                  itemCount: postFriends.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                        title: Text(postFriends[index]['name']),
-                        subtitle: Text(postFriends[index]['age']));
-                  },
-                ))
+            Expanded(child:  FutureBuilder<List<dynamic>>(
+                future: friendsList,
+                builder: (context, snapshot){
+                  if(snapshot.hasData){
+                    return ListView.builder(itemCount: snapshot.data!.length ,itemBuilder: (context, index){
+                      return ListTile(
+                        title: Text(snapshot.data![index]['name']),
+                        subtitle: Text(snapshot.data![index]['age']),
+                      );
+                    });
+                  }else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return const CircularProgressIndicator();
+                }
+            ) )
+
           ],
         ),
       ),

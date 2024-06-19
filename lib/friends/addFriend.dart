@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:future1/api/friendsOperations.dart';
+import 'package:flutter/services.dart';
 
 class FriendAddScreen extends StatefulWidget {
   const FriendAddScreen({super.key});
@@ -13,27 +13,6 @@ class FriendAddScreenState extends State<FriendAddScreen> {
   String newFriendName = "";
   String newFriendAge = "";
 
-  List<dynamic> postFriends = [];
-  Future<void> addFriend(String name, String age) async {
-    final response = await http.post(
-      Uri.parse('http://192.168.1.110:3000/friend-add'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'name': name,
-        'age': age,
-      }),
-    );
-    if (response.statusCode == 201) {
-      final responseBody = jsonDecode(response.body);
-      setState(() {
-        postFriends.add(responseBody);
-      });
-    } else {
-      throw Exception('Failed');
-    }
-  }
 
   @override
   Widget build(BuildContext context){
@@ -53,6 +32,7 @@ class FriendAddScreenState extends State<FriendAddScreen> {
                 ),
                 validator: (name){
                   newFriendName = name.toString();
+                  return null;
                 },
               ),
               TextFormField(
@@ -61,7 +41,9 @@ class FriendAddScreenState extends State<FriendAddScreen> {
                     hintText: 'Enter your friend`s name'
                 ),
                 validator:(age){
+                  FilteringTextInputFormatter.digitsOnly;
                   newFriendAge = age.toString();
+                  return null;
                 },
               ),
               Row(
@@ -70,7 +52,7 @@ class FriendAddScreenState extends State<FriendAddScreen> {
                     onPressed: (){
                       if (_formKey.currentState!.validate()) {
                         // Perform submission logic
-                        addFriend( newFriendName, newFriendAge);
+                       AddFriend().addFriend( newFriendName, newFriendAge);
                       }
                     },
                     child: const Text('Submit'),
