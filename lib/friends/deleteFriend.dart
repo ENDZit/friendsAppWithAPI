@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:future1/api/friendsOperations.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class DeleteFriendScreen extends StatefulWidget{
   const DeleteFriendScreen({super.key});
