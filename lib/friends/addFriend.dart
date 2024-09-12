@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter/services.dart';
+import 'package:future1/store/friendsStore.dart';
 
 class FriendAddScreen extends StatefulWidget {
   const FriendAddScreen({super.key});
@@ -9,6 +10,7 @@ class FriendAddScreen extends StatefulWidget {
   FriendAddScreenState createState() => FriendAddScreenState();
 }
 class FriendAddScreenState extends State<FriendAddScreen> {
+  final friend = FriendsStore();
   final _formKey = GlobalKey<FormState>();
   String newFriendName = "";
   String newFriendAge = "";
@@ -52,7 +54,7 @@ class FriendAddScreenState extends State<FriendAddScreen> {
                     onPressed: (){
                       if (_formKey.currentState!.validate()) {
                         // Perform submission logic
-                       AddFriend().addFriend( newFriendName, newFriendAge);
+                       friend.addFriend( newFriendName, newFriendAge);
                       }
                     },
                     child: const Text('Submit'),

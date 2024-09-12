@@ -1,37 +1,24 @@
+import 'package:future1/friend.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:mobx/mobx.dart';
 
-part 'friendsOperations.g.dart';
 
-class GetFriendsStore = _GetFriendsStore with _$GetFriendsStore;
 
-abstract class _GetFriendsStore with Store {
-  @observable
-  ObservableFuture<List<dynamic>> friendsList = ObservableFuture.value([]);
-
-  @action
-  Future<List<dynamic>> friends() async {
-    @observable
+class FriendsApi {
+  Future<List<Friend>> loadFriends() async {
     final response =
         await http.get(Uri.parse('http://192.168.1.110:3000/friends-list'));
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List<dynamic> friendsFromServer = jsonDecode(response.body);
+      final List<Friend> friends =
+          friendsFromServer.map((json) => Friend.fromJson(json)).toList();
+      return friends;
     } else {
       throw Exception('ERROR');
     }
   }
 
-  @action
-  Future<List> updateFriends() {
-    final future = friends();
-    friendsList = ObservableFuture(future);
-    return future;
-  }
-}
-
-class AddFriend {
-  Future<void> addFriend(String name, String age) async {
+  Future<Friend> addFriend(String name, String age) async {
     final response = await http.post(
       Uri.parse('http://192.168.1.110:3000/friend-add'),
       headers: <String, String>{
@@ -43,13 +30,11 @@ class AddFriend {
       }),
     );
     if (response.statusCode == 201) {
+      return Friend(name, age);
     } else {
-      throw Exception('Failed');
+     throw Exception('Failed');
     }
   }
-}
-
-class DeleteFriend {
 
   Future<void> deleteFriend(String name) async {
     final response = await http

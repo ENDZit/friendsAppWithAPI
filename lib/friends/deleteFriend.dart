@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:future1/store/friendsStore.dart';
 
 class DeleteFriendScreen extends StatefulWidget{
   const DeleteFriendScreen({super.key});
@@ -8,6 +9,7 @@ class DeleteFriendScreen extends StatefulWidget{
   DeleteFriendScreenState createState() => DeleteFriendScreenState();
 }
 class DeleteFriendScreenState extends State<DeleteFriendScreen>{
+  final friend = FriendsStore();
   final _formKey = GlobalKey<FormState>();
   String deletedFriendName = "";
   // List<dynamic> postFriends = [];
@@ -37,7 +39,7 @@ class DeleteFriendScreenState extends State<DeleteFriendScreen>{
                   Expanded(child: ElevatedButton(
                     onPressed: (){
                       if(_formKey.currentState!.validate()){
-                      DeleteFriend().deleteFriend(deletedFriendName);
+                      friend.removeFriend(deletedFriendName);
                       }
                     },
                     child: const Text("delete"),

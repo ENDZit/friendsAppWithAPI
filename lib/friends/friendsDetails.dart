@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:future1/store/friendsStore.dart';
 import 'package:mobx/mobx.dart';
 
 class FriendsDetails extends StatefulWidget {
@@ -12,12 +13,12 @@ class FriendsDetails extends StatefulWidget {
 
 @override
 class FriendsDetailsState extends State<FriendsDetails> {
-  final friend = GetFriendsStore();
+  final friend = FriendsStore();
 
   @override
   void initState() {
     super.initState();
-    friend.updateFriends();
+    friend.loadFriends();
   }
 
   @override
@@ -55,18 +56,23 @@ class FriendsDetailsState extends State<FriendsDetails> {
               ],
             ),
             Expanded(child: Observer(builder: (_) {
-              if (friend.friendsList.status == FutureStatus.fulfilled) {
-                final friends = friend.friendsList.value;
+              if (friend.friendsList.isEmpty) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
                 return ListView.builder(
-                  itemCount: friends!.length,
+                  itemCount: friend.friendsList.length,
                   itemBuilder: (contex, index) {
+                    final friend1 = friend.friendsList[index];
                     return ListTile(
-                      title: Text(friends[index]['name']),
-                      subtitle: Text(friends[index]['age']),
+                      title: Text(friend1.name),
+                      subtitle: Text(friend1.age),
                     );
                   },
                 );
               }
+
               return Container();
             }))
           ],
