@@ -33,6 +33,7 @@ app.post('/friend-add', (req, res) => {
 app.delete('/friend-delete/:name', (req, res) => {
   const friendName = req.params.name;
   friendsList = friendsList.filter(friend => friend.name !== friendName);
+  req.end(200);
 
 });
 

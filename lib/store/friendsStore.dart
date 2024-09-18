@@ -35,6 +35,9 @@ abstract class _FriendsStore with Store {
   @action
   Future<void> removeFriend(String name) async {
     await friendsApi.deleteFriend(name);
-    this.friendsList.removeWhere((friend) => friend.name == name);
+    print(friendsList);
+    this.friendsList.removeWhere((friend1) => friend1.name == name);
   }
 }
+
+final FriendsStore friend = FriendsStore();

@@ -2,8 +2,6 @@ import 'package:future1/friend.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
-
 class FriendsApi {
   Future<List<Friend>> loadFriends() async {
     final response =
@@ -32,16 +30,21 @@ class FriendsApi {
     if (response.statusCode == 201) {
       return Friend(name, age);
     } else {
-     throw Exception('Failed');
+      throw Exception('Failed');
     }
   }
 
   Future<void> deleteFriend(String name) async {
-    final response = await http
-        .delete(Uri.parse('http://192.168.1.110:3000/friend-delete/$name'));
-    if (response.statusCode == 200) {
-    } else {
-      throw Exception('Failed');
+    try {
+      final response = await http
+          .delete(Uri.parse('http://192.168.1.110:3000/friend-delete/$name'));
+      if (response.statusCode == 200) {
+        print('successful');
+      } else {
+        throw Exception('Error');
+      }
+    } catch (e) {
+      print('error is : ${e.runtimeType}');
     }
   }
 }

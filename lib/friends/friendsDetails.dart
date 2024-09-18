@@ -13,12 +13,10 @@ class FriendsDetails extends StatefulWidget {
 
 @override
 class FriendsDetailsState extends State<FriendsDetails> {
-  final friend = FriendsStore();
-
   @override
   void initState() {
     super.initState();
-    friend.loadFriends();
+    if (friend.friendsList.isEmpty) friend.loadFriends();
   }
 
   @override
@@ -40,12 +38,6 @@ class FriendsDetailsState extends State<FriendsDetails> {
                       },
                       child: const Text('friends add')),
                 ),
-                Expanded(
-                    child: ElevatedButton(
-                        onPressed: () {
-                          friend.updateFriends();
-                        },
-                        child: (const Text('refresh friends')))),
                 Expanded(
                     child: ElevatedButton(
                   onPressed: () {
