@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter/services.dart';
 import 'package:future1/store/friendsStore.dart';
+import 'dart:async';
+import 'package:future1/api/errorDescription.dart';
 
 class FriendAddScreen extends StatefulWidget {
   const FriendAddScreen({super.key});
@@ -50,10 +52,17 @@ class FriendAddScreenState extends State<FriendAddScreen> {
               children: [
                 Expanded(
                     child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Perform submission logic
-                      friend.addFriend(newFriendName, newFriendAge);
+                      await friend.addFriend(newFriendName, newFriendAge);
+                      final snackBar = SnackBar(
+                        content: Text("${erroeDescription.finalDescription}"),
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          onPressed: () {},
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                     Navigator.pushNamed(context, '/FriendsDetails');
                   },

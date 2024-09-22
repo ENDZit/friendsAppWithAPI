@@ -1,6 +1,8 @@
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:future1/friend.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'errorDescription.dart';
 
 class FriendsApi {
   Future<List<Friend>> loadFriends() async {
@@ -17,20 +19,27 @@ class FriendsApi {
   }
 
   Future<Friend> addFriend(String name, String age) async {
-    final response = await http.post(
-      Uri.parse('http://192.168.1.110:3000/friend-add'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'name': name,
-        'age': age,
-      }),
-    );
-    if (response.statusCode == 201) {
-      return Friend(name, age);
-    } else {
-      throw Exception('Failed');
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.1.110:3000/friend-add'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'name': name,
+          'age': age,
+        }),
+      );
+      if (response.statusCode == 201) {
+        erroeDescription.problemDescription("successfully added");
+        return Friend(name, age);
+      } else {
+        erroeDescription.problemDescription("ERROR");
+        throw Exception('ERROR');
+      }
+    } catch (e) {
+      erroeDescription.problemDescription('error is : ${e.runtimeType}');
+      throw Exception('error is : ${e.runtimeType}');
     }
   }
 
@@ -39,12 +48,12 @@ class FriendsApi {
       final response = await http
           .delete(Uri.parse('http://192.168.1.110:3000/friend-delete/$name'));
       if (response.statusCode == 200) {
-        print('successful');
+        erroeDescription.problemDescription("successfully deleted");
       } else {
-        throw Exception('Error');
+        erroeDescription.problemDescription("ERROR");
       }
     } catch (e) {
-      print('error is : ${e.runtimeType}');
+      erroeDescription.problemDescription('error is : ${e.runtimeType}');
     }
   }
 }

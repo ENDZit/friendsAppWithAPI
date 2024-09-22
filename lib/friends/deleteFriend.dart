@@ -3,6 +3,8 @@ import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:future1/store/friendsStore.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'package:future1/api/errorDescription.dart';
 
 class DeleteFriendScreen extends StatefulWidget {
   const DeleteFriendScreen({super.key});
@@ -39,11 +41,19 @@ class DeleteFriendScreenState extends State<DeleteFriendScreen> {
                 children: [
                   Expanded(
                       child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        friend.removeFriend(deletedFriendName);
-                        Navigator.pushNamed(context, '/FriendsDetails');
+                        await friend.removeFriend(deletedFriendName);
+                        final snackBar = SnackBar(
+                          content: Text("${erroeDescription.finalDescription}"),
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {},
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
+                      Navigator.pushNamed(context, '/FriendsDetails');
                     },
                     child: const Text("delete"),
                   ))
