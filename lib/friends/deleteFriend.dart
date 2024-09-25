@@ -4,7 +4,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:future1/store/friendsStore.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'package:future1/api/errorDescription.dart';
 
 class DeleteFriendScreen extends StatefulWidget {
   const DeleteFriendScreen({super.key});
@@ -34,6 +33,10 @@ class DeleteFriendScreenState extends State<DeleteFriendScreen> {
                 validator: (name) {
                   FilteringTextInputFormatter.digitsOnly;
                   deletedFriendName = name.toString();
+                  if (friend.friendsList
+                      .every((friend) => friend.name != '$deletedFriendName')) {
+                    return 'wrong friend name';
+                  }
                   return null;
                 },
               ),
@@ -43,17 +46,20 @@ class DeleteFriendScreenState extends State<DeleteFriendScreen> {
                       child: ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        await friend.removeFriend(deletedFriendName);
-                        final snackBar = SnackBar(
-                          content: Text("${erroeDescription.finalDescription}"),
-                          action: SnackBarAction(
-                            label: 'Undo',
-                            onPressed: () {},
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        try {
+                          await friend.removeFriend(deletedFriendName);
+                          Navigator.pushNamed(context, '/FriendsDetails');
+                        } catch (e) {
+                          final snackBar = SnackBar(
+                            content: Text('error: ${e.runtimeType}'),
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              onPressed: () {},
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
                       }
-                      Navigator.pushNamed(context, '/FriendsDetails');
                     },
                     child: const Text("delete"),
                   ))
