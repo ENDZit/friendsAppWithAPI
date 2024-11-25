@@ -3,24 +3,20 @@ import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:future1/store/friendsStore.dart';
 import 'package:mobx/mobx.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:future1/friend.dart';
 
-class FriendsDetails extends StatefulWidget {
+class FriendsDetails extends HookWidget {
   const FriendsDetails({super.key});
 
   @override
-  FriendsDetailsState createState() => FriendsDetailsState();
-}
-
-@override
-class FriendsDetailsState extends State<FriendsDetails> {
-  @override
-  void initState() {
-    super.initState();
-    if (friend.friendsList.isEmpty) friend.loadFriends();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final friendList = useState(friend.friendsList);
+
+    useEffect((){
+      if (friend.friendsList.isEmpty) friend.loadFriends();
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Friends'),
@@ -49,17 +45,17 @@ class FriendsDetailsState extends State<FriendsDetails> {
             ),
             Expanded(child: Observer(builder: (_) {
               if (friend.friendsList.isEmpty) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else {
                 return ListView.builder(
-                  itemCount: friend.friendsList.length,
+                  itemCount: friendList.value.length,
                   itemBuilder: (contex, index) {
-                    final friend1 = friend.friendsList[index];
+                   // final friend1 = friendList.value[index];
                     return ListTile(
-                      title: Text(friend1.name),
-                      subtitle: Text(friend1.age),
+                      title: Text(friendList.value[index].name),
+                      subtitle: Text(friendList.value[index].age),
                     );
                   },
                 );

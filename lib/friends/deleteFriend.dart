@@ -4,20 +4,16 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:future1/store/friendsStore.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class DeleteFriendScreen extends StatefulWidget {
+class DeleteFriendScreen extends HookWidget {
   const DeleteFriendScreen({super.key});
 
   @override
-  DeleteFriendScreenState createState() => DeleteFriendScreenState();
-}
-
-class DeleteFriendScreenState extends State<DeleteFriendScreen> {
-  final _formKey = GlobalKey<FormState>();
-  String deletedFriendName = "";
-
-  @override
   Widget build(BuildContext context) {
+    final _formKey = useMemoized(() => GlobalKey<FormState>());
+    final deletedFriendName = useState('');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Delete friend'),
@@ -30,11 +26,14 @@ class DeleteFriendScreenState extends State<DeleteFriendScreen> {
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: "Friend`s name"),
+                onChanged: (name) {
+                  deletedFriendName.value = name;
+                },
                 validator: (name) {
                   FilteringTextInputFormatter.digitsOnly;
-                  deletedFriendName = name.toString();
-                  if (friend.friendsList
-                      .every((friend) => friend.name != '$deletedFriendName')) {
+                  //deletedFriendName.value = name.toString();
+                  if (friend.friendsList.every((friend) =>
+                      friend.name != '${deletedFriendName.value}')) {
                     return 'wrong friend name';
                   }
                   return null;
@@ -47,7 +46,7 @@ class DeleteFriendScreenState extends State<DeleteFriendScreen> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         try {
-                          await friend.removeFriend(deletedFriendName);
+                          await friend.removeFriend(deletedFriendName.value);
                           Navigator.pushNamed(context, '/FriendsDetails');
                         } catch (e) {
                           final snackBar = SnackBar(

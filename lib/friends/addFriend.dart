@@ -3,21 +3,17 @@ import 'package:future1/api/friendsOperations.dart';
 import 'package:flutter/services.dart';
 import 'package:future1/store/friendsStore.dart';
 import 'dart:async';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class FriendAddScreen extends StatefulWidget {
+class FriendAddScreen extends HookWidget {
   const FriendAddScreen({super.key});
 
   @override
-  FriendAddScreenState createState() => FriendAddScreenState();
-}
-
-class FriendAddScreenState extends State<FriendAddScreen> {
-  final _formKey = GlobalKey<FormState>();
-  String newFriendName = "";
-  String newFriendAge = "";
-
-  @override
   Widget build(BuildContext context) {
+    final _formKey = useMemoized(() => GlobalKey<FormState>() );
+    final newFriendName = useState("");
+    final newFriendAge = useState("");
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Enter your friend`s data"),
@@ -32,8 +28,10 @@ class FriendAddScreenState extends State<FriendAddScreen> {
               decoration: const InputDecoration(
                   labelText: 'Friend`s name',
                   hintText: 'Enter your friend`s name'),
+              onChanged: (name) {
+                 newFriendName.value = name;
+              },
               validator: (name) {
-                newFriendName = name.toString();
                 return null;
               },
             ),
@@ -41,9 +39,11 @@ class FriendAddScreenState extends State<FriendAddScreen> {
               decoration: const InputDecoration(
                   labelText: 'Friend`s age',
                   hintText: 'Enter your friend`s name'),
+              onChanged: (age){
+                newFriendAge. value = age;
+              },
               validator: (age) {
                 FilteringTextInputFormatter.digitsOnly;
-                newFriendAge = age.toString();
                 return null;
               },
             ),
@@ -54,7 +54,7 @@ class FriendAddScreenState extends State<FriendAddScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        await friend.addFriend(newFriendName, newFriendAge);
+                        await friend.addFriend(newFriendName.value, newFriendAge.value);
                         Navigator.pushNamed(context, '/FriendsDetails');
                       } catch (e) {
                         final snackBar = SnackBar(
